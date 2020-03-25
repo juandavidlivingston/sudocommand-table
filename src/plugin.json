@@ -1,0 +1,24 @@
+{
+  "type": "panel",
+  "name": "Sudocommand Table",
+  "id": "sudocommand-table",
+
+  "info": {
+    "description": "Sudocommand Table",
+    "author": {
+      "name": "Sudocommand"
+    },
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "screenshots": [],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+
+  "dependencies": {
+    "grafanaVersion": "6.3.x",
+    "plugins": []
+  }
+}

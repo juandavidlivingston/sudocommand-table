@@ -1,0 +1,31 @@
+{
+  "name": "sudocommand-table",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "grafana-toolkit plugin:build",
+    "test": "grafana-toolkit plugin:test",
+    "dev": "grafana-toolkit plugin:dev",
+    "watch": "grafana-toolkit plugin:dev --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/"
+  },
+  "author": "Grafana Labs <team@grafana.com> (https://grafana.com)",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/grafana/",
+    "email": "plugins@grafana.com"
+  },
+  "devDependencies": {
+    "@grafana/data": "next",
+    "@grafana/toolkit": "next",
+    "@grafana/ui": "next"
+  },
+  "dependencies": {
+    "@babel/preset-env": "^7.9.0",
+    "@grafana/runtime": "^6.7.1",
+    "@types/lodash": "^4.14.149"
+  }
+}
