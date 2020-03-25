@@ -26,6 +26,8 @@
   "dependencies": {
     "@babel/preset-env": "^7.9.0",
     "@grafana/runtime": "^6.7.1",
-    "@types/lodash": "^4.14.149"
+    "@types/lodash": "^4.14.149",
+    "@types/mathjs": "^6.0.4",
+    "mathjs": "^6.6.1"
   }
 }
