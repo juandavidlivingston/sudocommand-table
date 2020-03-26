@@ -90105,23 +90105,32 @@ var TablePanel = function TablePanel(_a) {
     }
   };
 
-  Object(react__WEBPACK_IMPORTED_MODULE_1__["useEffect"])(function () {
-    var dataProcessed = applyFieldOverrides();
-    var totalPages = Math.trunc(dataProcessed.length / options.rowsPerPage);
+  var generateArrayPages = function generateArrayPages() {
+    var totalPages = Math.trunc(series.length / options.rowsPerPage);
     var pages = [];
 
     for (var i = 0; i <= totalPages; i++) {
       pages.push(i + 1);
     }
 
-    console.log(dataProcessed);
-    setSeries(dataProcessed);
     setPages(pages);
-    setCurrentPage(1);
-  }, [data, options]);
+  };
+
   Object(react__WEBPACK_IMPORTED_MODULE_1__["useEffect"])(function () {
+    var dataProcessed = applyFieldOverrides();
+    setSeries(dataProcessed);
+    generateArrayPages();
+    setCurrentPage(1);
+  }, [data]);
+  Object(react__WEBPACK_IMPORTED_MODULE_1__["useEffect"])(function () {
+    generateArrayPages();
     seriesSlice();
   }, [currentPage]);
+  Object(react__WEBPACK_IMPORTED_MODULE_1__["useEffect"])(function () {
+    setCurrentPage(1);
+    generateArrayPages();
+    seriesSlice();
+  }, [options]);
 
   if (series.length < 1) {
     return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, "No Table Data...");
@@ -90131,7 +90140,8 @@ var TablePanel = function TablePanel(_a) {
     className: "panel-height-helper",
     style: {
       display: 'grid',
-      gridTemplateRows: '1fr auto'
+      gridTemplateRows: '1fr 20px',
+      fontSize: options.fontSize
     }
   }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
     className: "table-panel-container"
@@ -90225,35 +90235,61 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+var PanelEditor = function PanelEditor(props) {
+  var _a = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(props.options.rowsPerPage), 2),
+      rowsPerPage = _a[0],
+      setRowsPerPage = _a[1];
+
+  var _b = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(props.options.fontSize), 2),
+      fontSize = _b[0],
+      setFontSize = _b[1];
+
+  return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+    className: "section gf-form-group"
+  }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h5", {
+    className: "section-heading"
+  }, "Paging"), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_2__["FormField"], {
+    label: "Rows per page",
+    labelWidth: 10,
+    inputWidth: 10,
+    value: rowsPerPage,
+    placeholder: "",
+    onChange: function onChange(e) {
+      return setRowsPerPage(e.target.value);
+    },
+    onBlur: function onBlur(e) {
+      return props.onOptionsChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, props.options), {
+        rowsPerPage: parseInt(e.target.value)
+      }));
+    }
+  }), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_2__["FormField"], {
+    label: "Font size",
+    labelWidth: 10,
+    inputWidth: 10,
+    value: fontSize,
+    placeholder: "",
+    onChange: function onChange(e) {
+      return setFontSize(e.target.value);
+    },
+    onBlur: function onBlur(e) {
+      return props.onOptionsChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, props.options), {
+        fontSize: e.target.value
+      }));
+    }
+  })));
+};
+
 var TablePanelEditor =
 /** @class */
 function (_super) {
   Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__extends"])(TablePanelEditor, _super);
 
   function TablePanelEditor() {
-    var _this = _super !== null && _super.apply(this, arguments) || this;
-
-    _this.onToggleShowHeader = function () {
-      _this.props.onOptionsChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, _this.props.options), {
-        showHeader: !_this.props.options.showHeader
-      }));
-    };
-
-    return _this;
+    return _super !== null && _super.apply(this, arguments) || this;
   }
 
   TablePanelEditor.prototype.render = function () {
-    var showHeader = this.props.options.showHeader;
-    return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
-      className: "section gf-form-group"
-    }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h5", {
-      className: "section-heading"
-    }, "Header"), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_2__["Switch"], {
-      label: "Show",
-      labelClass: "width-6",
-      checked: showHeader,
-      onChange: this.onToggleShowHeader
-    })));
+    return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(PanelEditor, Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, this.props));
   };
 
   return TablePanelEditor;
@@ -90297,7 +90333,6 @@ var plugin = new _grafana_data__WEBPACK_IMPORTED_MODULE_0__["PanelPlugin"](_Tabl
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "defaults", function() { return defaults; });
 var defaults = {
-  showHeader: true,
   rowsPerPage: 100,
   fontSize: '16px'
 };

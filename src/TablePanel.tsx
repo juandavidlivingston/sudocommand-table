@@ -77,33 +77,44 @@ export const TablePanel = ({ data, height, width, options }: Props) => {
       const indexEnd = (currentPage - 1) * options.rowsPerPage + options.rowsPerPage;
       setSeriesProcessed(series.slice(indexStart, indexEnd));
     }
-  }
+  };
 
-  useEffect(() => {
-    const dataProcessed: any = applyFieldOverrides();
-    const totalPages = Math.trunc(dataProcessed.length / options.rowsPerPage);
+  const generateArrayPages = () => {
+    const totalPages = Math.trunc(series.length / options.rowsPerPage);
     const pages: any[] = [];
 
     for (let i = 0; i <= totalPages; i++) {
       pages.push(i + 1);
     }
 
-    console.log(dataProcessed);
-    setSeries(dataProcessed);
     setPages(pages);
-    setCurrentPage(1);
-  }, [data, options]);
+  };
 
   useEffect(() => {
+    const dataProcessed: any = applyFieldOverrides();
+
+    setSeries(dataProcessed);
+    generateArrayPages();
+    setCurrentPage(1);
+  }, [data]);
+
+  useEffect(() => {
+    generateArrayPages();
     seriesSlice();
   }, [currentPage])
+
+  useEffect(() => {
+    setCurrentPage(1);
+    generateArrayPages();
+    seriesSlice();
+  }, [options])
 
   if (series.length < 1) {
     return <div>No Table Data...</div>;
   }
 
   return (
-    <div className="panel-height-helper" style={{ display: 'grid', gridTemplateRows: '1fr auto' }}>
+    <div className="panel-height-helper" style={{ display: 'grid', gridTemplateRows: '1fr 20px', fontSize: options.fontSize }}>
       <div className="table-panel-container">
         <div className="table-panel-header-bg"></div>
         <div className="table-panel-scroll" style={{ maxHeight: height, width }}>

@@ -1,27 +1,49 @@
 //// Libraries
 import _ from 'lodash';
-import React, { PureComponent } from 'react';
+import React, { PureComponent, useState } from 'react';
 
 // Types
 import { PanelEditorProps } from '@grafana/data';
-import { Switch } from '@grafana/ui';
+import { FormField } from '@grafana/ui';
 import { Options } from './types';
 
-export class TablePanelEditor extends PureComponent<PanelEditorProps<Options>> {
-  onToggleShowHeader = () => {
-    this.props.onOptionsChange({ ...this.props.options, showHeader: !this.props.options.showHeader });
-  };
+interface Props extends PanelEditorProps<Options> { }
 
-  render() {
-    const { showHeader } = this.props.options;
+const PanelEditor = (props: Props) => {
+  const [rowsPerPage, setRowsPerPage] = useState(props.options.rowsPerPage);
+  const [fontSize, setFontSize] = useState(props.options.fontSize);
 
-    return (
-      <div>
-        <div className="section gf-form-group">
-          <h5 className="section-heading">Header</h5>
-          <Switch label="Show" labelClass="width-6" checked={showHeader} onChange={this.onToggleShowHeader} />
-        </div>
+
+  return (
+    <div>
+      <div className="section gf-form-group">
+        <h5 className="section-heading">Paging</h5>
+        <FormField
+          label="Rows per page"
+          labelWidth={10}
+          inputWidth={10}
+          value={rowsPerPage}
+          placeholder=""
+          onChange={(e: any) => setRowsPerPage(e.target.value)}
+          onBlur={(e: any) => props.onOptionsChange({ ...props.options, rowsPerPage: parseInt(e.target.value) })}
+        />
+
+        <FormField
+          label="Font size"
+          labelWidth={10}
+          inputWidth={10}
+          value={fontSize}
+          placeholder=""
+          onChange={(e: any) => setFontSize(e.target.value)}
+          onBlur={(e: any) => props.onOptionsChange({ ...props.options, fontSize: e.target.value })}
+        />
       </div>
-    );
+    </div>
+  )
+}
+
+export class TablePanelEditor extends PureComponent<Props> {
+  render() {
+    return <PanelEditor {...this.props} />
   }
 }
