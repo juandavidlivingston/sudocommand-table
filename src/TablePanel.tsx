@@ -78,7 +78,7 @@ export const TablePanel = ({ data, height, width, options }: Props) => {
   }
 
   return (
-    <div className="table-panel-container">
+    <div className="table-panel-container" style={{ margin: '-8px' }}>
       <div className="table-panel-header-bg"></div>
       <div className="table-panel-scroll" style={{ maxHeight: height, width }}>
         <table className="table-panel-table" style={{ marginBottom }}>
