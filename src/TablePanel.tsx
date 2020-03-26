@@ -7,13 +7,16 @@ import { Options } from './types';
 import _ from 'lodash';
 import { round } from 'mathjs';
 
-interface Props extends PanelProps<Options> {}
+interface Props extends PanelProps<Options> { }
 
 const marginBottom = 30;
 
 export const TablePanel = ({ data, height, width, options }: Props) => {
   const [series, setSeries] = useState([]);
+  const [seriesProcessed, setSeriesProcessed] = useState([]);
   const [sorted, setSorted] = useState({ field: '', order: '' });
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pages, setPages] = useState([1]);
 
   const sortedByField = (field: string) => {
     let dataProcessed: any = [];
@@ -42,6 +45,7 @@ export const TablePanel = ({ data, height, width, options }: Props) => {
     }
     setSorted({ field, order });
     setSeries(dataProcessed);
+    seriesSlice();
   };
 
   const applyFieldOverrides = () => {
@@ -67,65 +71,105 @@ export const TablePanel = ({ data, height, width, options }: Props) => {
       });
   };
 
+  const seriesSlice = () => {
+    if (currentPage > 0) {
+      const indexStart = (currentPage - 1) * options.rowsPerPage;
+      const indexEnd = (currentPage - 1) * options.rowsPerPage + options.rowsPerPage;
+      setSeriesProcessed(series.slice(indexStart, indexEnd));
+    }
+  }
+
   useEffect(() => {
     const dataProcessed: any = applyFieldOverrides();
+    const totalPages = Math.trunc(dataProcessed.length / options.rowsPerPage);
+    const pages: any[] = [];
+
+    for (let i = 0; i <= totalPages; i++) {
+      pages.push(i + 1);
+    }
+
     console.log(dataProcessed);
     setSeries(dataProcessed);
+    setPages(pages);
+    setCurrentPage(1);
   }, [data, options]);
+
+  useEffect(() => {
+    seriesSlice();
+  }, [currentPage])
 
   if (series.length < 1) {
     return <div>No Table Data...</div>;
   }
 
   return (
-    <div className="table-panel-container" style={{ margin: '-8px' }}>
-      <div className="table-panel-header-bg"></div>
-      <div className="table-panel-scroll" style={{ maxHeight: height, width }}>
-        <table className="table-panel-table" style={{ marginBottom }}>
-          <thead>
-            <tr>
-              <th>
-                <div className="table-panel-table-header-inner pointer" onClick={() => sortedByField('name')}>
-                  Name
+    <div className="panel-height-helper" style={{ display: 'grid', gridTemplateRows: '1fr auto' }}>
+      <div className="table-panel-container">
+        <div className="table-panel-header-bg"></div>
+        <div className="table-panel-scroll" style={{ maxHeight: height, width }}>
+          <table className="table-panel-table" style={{ marginBottom }}>
+            <thead>
+              <tr>
+                <th>
+                  <div className="table-panel-table-header-inner pointer" onClick={() => sortedByField('name')}>
+                    Name
                   <span className="table-panel-table-header-controls" style={{ marginLeft: '10px' }}>
-                    {sorted.field === 'name' && sorted.order === 'desc' && <i className="fa fa-caret-down"></i>}
-                    {sorted.field === 'name' && sorted.order === 'asc' && <i className="fa fa-caret-up"></i>}
-                  </span>
-                </div>
-              </th>
-              <th>
-                <div className="table-panel-table-header-inner pointer" onClick={() => sortedByField('value')}>
-                  Value
+                      {sorted.field === 'name' && sorted.order === 'desc' && <i className="fa fa-caret-down"></i>}
+                      {sorted.field === 'name' && sorted.order === 'asc' && <i className="fa fa-caret-up"></i>}
+                    </span>
+                  </div>
+                </th>
+                <th>
+                  <div className="table-panel-table-header-inner pointer" onClick={() => sortedByField('value')}>
+                    Value
                   <span className="table-panel-table-header-controls" style={{ marginLeft: '10px' }}>
-                    {sorted.field === 'value' && sorted.order === 'desc' && <i className="fa fa-caret-down"></i>}
-                    {sorted.field === 'value' && sorted.order === 'asc' && <i className="fa fa-caret-up"></i>}
-                  </span>
-                </div>
-              </th>
-              <th>
-                <div className="table-panel-table-header-inner pointer" onClick={() => sortedByField('percentage')}>
-                  Percentage
+                      {sorted.field === 'value' && sorted.order === 'desc' && <i className="fa fa-caret-down"></i>}
+                      {sorted.field === 'value' && sorted.order === 'asc' && <i className="fa fa-caret-up"></i>}
+                    </span>
+                  </div>
+                </th>
+                <th>
+                  <div className="table-panel-table-header-inner pointer" onClick={() => sortedByField('percentage')}>
+                    Percentage
                   <span className="table-panel-table-header-controls" style={{ marginLeft: '10px' }}>
-                    {sorted.field === 'percentage' && sorted.order === 'desc' && <i className="fa fa-caret-down"></i>}
-                    {sorted.field === 'percentage' && sorted.order === 'asc' && <i className="fa fa-caret-up"></i>}
-                  </span>
-                </div>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {series.map((item: any) => {
-              return (
-                <tr>
-                  <td>{item.name}</td>
-                  <td>{item.value}</td>
-                  <td>{item.percentage}%</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                      {sorted.field === 'percentage' && sorted.order === 'desc' && <i className="fa fa-caret-down"></i>}
+                      {sorted.field === 'percentage' && sorted.order === 'asc' && <i className="fa fa-caret-up"></i>}
+                    </span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {seriesProcessed.map((item: any) => {
+                return (
+                  <tr>
+                    <td>{item.name}</td>
+                    <td>{item.value}</td>
+                    <td>{item.percentage}%</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+      {
+        pages.length > 1 &&
+        <div className="table-panel-footer">
+          <ul>
+            {pages.map(item => {
+              return (
+                <li>
+                  <a
+                    className={item === currentPage ? 'table-panel-page-link pointer active' : 'table-panel-page-link pointer'}
+                    onClick={() => setCurrentPage(item)}
+                  >{item}</a>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      }
+    </div >
   );
 };
